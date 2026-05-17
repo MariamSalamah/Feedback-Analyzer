@@ -170,8 +170,3 @@ npm run dev
   - Frontend: `4200`
   - Backend: `3000`
 
----
-
-## License
-
-Add a license file if needed.
