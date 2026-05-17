@@ -1,0 +1,144 @@
+<div class="dashboard">
+  <!-- Top Bar -->
+  <div class="dashboard__topbar">
+    <div class="dashboard__title-group">
+      <h2 class="dashboard__product">{{ result.productName }}</h2>
+      <span class="dashboard__meta">
+        {{ result.totalFeedbacks }} feedback entries · Analyzed {{ result.analyzedAt | date:'MMM d, y · h:mm a' }}
+      </span>
+    </div>
+    <div class="dashboard__actions">
+      <button class="action-btn" (click)="exportReport()">
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <path d="M7.5 10L7.5 2M4 7l3.5 3.5L11 7M2 12h11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Export JSON
+      </button>
+      <button class="action-btn action-btn--primary" (click)="reset.emit()">
+        New Analysis
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-card__label">Overall Sentiment</span>
+      <span class="kpi-card__value sentiment-chip">{{ sentimentLabel }}</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__label">Positive</span>
+      <span class="kpi-card__value" style="color:#64ffda">{{ result.sentimentScore.positive }}%</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__label">Negative</span>
+      <span class="kpi-card__value" style="color:#ff6b6b">{{ result.sentimentScore.negative }}%</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-card__label">NPS Score</span>
+      <span class="kpi-card__value" [style.color]="npsColor">
+        {{ result.npsScore > 0 ? '+' : '' }}{{ result.npsScore }}
+        <small>{{ npsLabel }}</small>
+      </span>
+    </div>
+  </div>
+
+  <!-- Summary Banner -->
+  <div class="summary-banner">
+    <div class="summary-banner__icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 3.5v5m0 2.5h.01" stroke="#a9a0ff" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <p class="summary-banner__text">{{ result.summary }}</p>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <!-- Sentiment Donut -->
+    <div class="chart-card">
+      <h3 class="chart-card__title">Sentiment Breakdown</h3>
+      <div class="chart-card__donut-wrap">
+        <canvas #sentimentChart></canvas>
+        <div class="chart-card__donut-center">
+          <span class="chart-card__donut-value">{{ result.sentimentScore.positive }}%</span>
+          <span class="chart-card__donut-label">positive</span>
+        </div>
+      </div>
+      <div class="legend">
+        <div class="legend__item">
+          <span class="legend__dot" style="background:#64ffda"></span>
+          Positive ({{ result.sentimentScore.positive }}%)
+        </div>
+        <div class="legend__item">
+          <span class="legend__dot" style="background:#ff6b6b"></span>
+          Negative ({{ result.sentimentScore.negative }}%)
+        </div>
+        <div class="legend__item">
+          <span class="legend__dot" style="background:#7c6fff"></span>
+          Neutral ({{ result.sentimentScore.neutral }}%)
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Themes Bar -->
+    <div class="chart-card chart-card--wide">
+      <h3 class="chart-card__title">Key Themes</h3>
+      <canvas #themesChart height="180"></canvas>
+    </div>
+  </div>
+
+  <!-- Problems -->
+  <div class="section">
+    <div class="section__header">
+      <h3 class="section__title">
+        <span class="section__icon section__icon--red">⚠</span>
+        Identified Problems
+      </h3>
+      <span class="section__count">{{ result.problems.length }} issues</span>
+    </div>
+    <div class="cards-grid">
+      <div class="problem-card" *ngFor="let p of result.problems">
+        <div class="problem-card__top">
+          <h4 class="problem-card__title">{{ p.title }}</h4>
+          <span class="freq-badge" [ngClass]="frequencyBadge(p.frequency).cls">
+            {{ frequencyBadge(p.frequency).label }}
+          </span>
+        </div>
+        <p class="problem-card__desc">{{ p.description }}</p>
+        <span class="problem-card__area">{{ p.affectedArea }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="section">
+    <div class="section__header">
+      <h3 class="section__title">
+        <span class="section__icon section__icon--green">✦</span>
+        AI Recommendations
+      </h3>
+      <span class="section__count">{{ result.recommendations.length }} actions</span>
+    </div>
+    <div class="rec-list">
+      <div class="rec-card" *ngFor="let r of result.recommendations; let i = index">
+        <div class="rec-card__num">{{ i + 1 }}</div>
+        <div class="rec-card__body">
+          <div class="rec-card__top">
+            <h4 class="rec-card__title">{{ r.title }}</h4>
+            <span class="prio-badge" [ngClass]="priorityBadge(r.priority).cls">
+              {{ priorityBadge(r.priority).label }}
+            </span>
+          </div>
+          <p class="rec-card__desc">{{ r.description }}</p>
+          <div class="rec-card__impact">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M6.5 1v11M1 6.5h11" stroke="#64ffda" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            {{ r.impact }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

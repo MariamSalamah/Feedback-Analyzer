@@ -1,0 +1,107 @@
+<div class="form-card">
+  <div class="form-card__header">
+    <h2 class="form-card__title">Analyze Customer Feedback</h2>
+    <p class="form-card__subtitle">Paste your feedback entries and let AI extract insights, problems, and recommendations.</p>
+  </div>
+
+  <div class="form-card__body">
+    <!-- Product Name -->
+    <div class="field">
+      <label class="field__label">Product / Service Name</label>
+      <input
+        class="field__input"
+        type="text"
+        [(ngModel)]="productName"
+        placeholder="e.g. ProjectFlow Pro, ShopEasy, Zenith App..."
+        [disabled]="useMockData"
+      />
+    </div>
+
+    <!-- Feedback Input -->
+    <div class="field">
+      <div class="field__label-row">
+        <label class="field__label">Customer Feedback Entries</label>
+        <span class="field__count" *ngIf="feedbackCount > 0">
+          {{ feedbackCount }} entr{{ feedbackCount === 1 ? 'y' : 'ies' }} detected
+        </span>
+      </div>
+      <textarea
+        class="field__textarea"
+        [(ngModel)]="feedbackText"
+        placeholder="Paste feedback entries here. Separate multiple entries with '---' or two blank lines.&#10;&#10;Example:&#10;The app is amazing but loading is slow...&#10;&#10;---&#10;&#10;Support team was very responsive..."
+        rows="8"
+        [disabled]="useMockData"
+      ></textarea>
+      <span class="field__hint">Separate individual feedback entries with <code>---</code> or two blank lines</span>
+    </div>
+
+    <!-- Analysis Mode Toggle -->
+    <div class="field field--row">
+      <label class="field__label">Analysis Depth</label>
+      <div class="toggle-group">
+        <button
+          class="toggle-btn"
+          [class.toggle-btn--active]="analysisType === 'quick'"
+          (click)="analysisType = 'quick'"
+        >Quick</button>
+        <button
+          class="toggle-btn"
+          [class.toggle-btn--active]="analysisType === 'detailed'"
+          (click)="analysisType = 'detailed'"
+        >Detailed</button>
+      </div>
+    </div>
+
+    <!-- API Key -->
+    <!-- <div class="field" *ngIf="!useMockData">
+      <label class="field__label">
+        Anthropic API Key
+        <span class="field__optional">for direct mode</span>
+      </label>
+      <div class="field__input-group">
+        <input
+          class="field__input"
+          [type]="showApiKey ? 'text' : 'password'"
+          [(ngModel)]="apiKey"
+          placeholder="sk-ant-..."
+        />
+        <button class="field__toggle-btn" (click)="showApiKey = !showApiKey">
+          {{ showApiKey ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+      <span class="field__hint">Key is stored only in memory and never sent to our servers.</span>
+    </div> -->
+
+    <!-- Mock Data Toggle -->
+    <div class="mock-toggle">
+      <label class="mock-toggle__label">
+        <input type="checkbox" [(ngModel)]="useMockData" class="mock-toggle__checkbox" />
+        <span class="mock-toggle__track"></span>
+        <span class="mock-toggle__text">Use demo data <span class="mock-toggle__sub">(no API key needed)</span></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="form-card__footer">
+    <button class="btn-sample" (click)="loadSample()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M2 8h12M8 2v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Load Sample Data
+    </button>
+
+    <button
+      class="btn-analyze"
+      [class.btn-analyze--disabled]="!isValid"
+      (click)="onSubmit()"
+      [disabled]="!isValid"
+    >
+      <span class="btn-analyze__text">
+        {{ useMockData ? 'Run Demo Analysis' : 'Analyze Feedback' }}
+      </span>
+      <svg class="btn-analyze__icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M3.75 9h10.5M9 3.75L14.25 9 9 14.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</div>

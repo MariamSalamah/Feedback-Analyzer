@@ -1,0 +1,6 @@
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #080814; color: #fff; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0d0d1a; }
+::-webkit-scrollbar-thumb { background: rgba(124, 111, 255, 0.4); border-radius: 3px; }
+::selection { background: rgba(124, 111, 255, 0.35); }

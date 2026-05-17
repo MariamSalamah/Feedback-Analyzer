@@ -1,0 +1,76 @@
+<app-header></app-header>
+
+<main class="main">
+  <div class="container">
+
+    <div class="hero" *ngIf="state === 'form'">
+      <div class="hero__badge">AI-Powered Analytics</div>
+      <h1 class="hero__title">
+        Turn Feedback Into<br>
+        <span class="hero__highlight">Business Intelligence</span>
+      </h1>
+      <p class="hero__desc">
+        Paste raw customer feedback and get instant sentiment analysis, problem identification,
+        and AI-generated recommendations — ready to share with your team.
+      </p>
+      <div class="hero__features">
+        <div class="feature-pill"><span class="feature-pill__icon">⚡</span> Instant Analysis</div>
+        <div class="feature-pill"><span class="feature-pill__icon">🎯</span> Sentiment Scoring</div>
+        <div class="feature-pill"><span class="feature-pill__icon">📋</span> Action Items</div>
+        <div class="feature-pill"><span class="feature-pill__icon">📊</span> Visual Reports</div>
+      </div>
+    </div>
+
+    <app-feedback-form
+      *ngIf="state === 'form'"
+      (analyze)="onAnalyze($event)"
+    ></app-feedback-form>
+
+    <div class="loading-state" *ngIf="state === 'loading'">
+      <div class="loading-state__orb">
+        <div class="orb-ring orb-ring--1"></div>
+        <div class="orb-ring orb-ring--2"></div>
+        <div class="orb-ring orb-ring--3"></div>
+        <svg class="orb-icon" width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M4 22L10 14L16 18L22 8" stroke="#64ffda" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="22" cy="8" r="3" fill="#64ffda"/>
+          <circle cx="4" cy="22" r="3" fill="#7c6fff"/>
+        </svg>
+      </div>
+      <h2 class="loading-state__title">Analyzing Your Feedback</h2>
+      <div class="loading-steps">
+        <div
+          class="loading-step"
+          *ngFor="let step of loadingSteps; let i = index"
+          [class.loading-step--active]="i === currentStep"
+          [class.loading-step--done]="i < currentStep"
+        >
+          <span class="loading-step__icon">
+            <ng-container *ngIf="i < currentStep">✓</ng-container>
+            <ng-container *ngIf="i === currentStep"><span class="loading-step__dot"></span></ng-container>
+            <ng-container *ngIf="i > currentStep">○</ng-container>
+          </span>
+          {{ step }}
+        </div>
+      </div>
+    </div>
+
+    <div class="error-state" *ngIf="state === 'error'">
+      <div class="error-state__icon">⚠</div>
+      <h2 class="error-state__title">Analysis Failed</h2>
+      <p class="error-state__message">{{ errorMessage }}</p>
+      <button class="error-state__btn" (click)="reset()">Try Again</button>
+    </div>
+
+    <app-results-dashboard
+      *ngIf="state === 'result' && result"
+      [result]="result"
+      (reset)="reset()"
+    ></app-results-dashboard>
+
+  </div>
+</main>
+
+<footer class="footer">
+  <span>FeedbackIQ · Powered by Claude AI · Built with Angular</span>
+</footer>
