@@ -33,7 +33,57 @@ Frontend will be available at:
 
 ## Architecture
 
+### Backend agent (OpenAI Agents) JSON contract
+
+In `server/index.js`, the backend defines `feedbackAgent = new Agent({ ... })` (OpenAI Agents). The agent is instructed to return **JSON only**.
+
+**Agent name:** `Business Feedback Analyzer`
+
+**Agent instructions (summary):** produce a structured business intelligence report and return **ONLY** a valid JSON object (no markdown / no backticks).
+
+**Agent tools:**
+- `analyze_sentiment`
+- `extract_problems`
+- `generate_recommendations`
+
+The exact JSON structure the agent is told to return is below (including field names and allowed enum values):
+
+
+```json
+{
+  "productName": "<string>",
+  "totalFeedbacks": <number>,
+  "overallSentiment": "positive|negative|neutral|mixed",
+  "sentimentScore": { "positive": <0-100>, "negative": <0-100>, "neutral": <0-100> },
+  "summary": "<2-3 sentence executive summary>",
+  "keyThemes": ["<theme1>", "<theme2>", "<theme3>", "<theme4>", "<theme5>"],
+  "problems": [
+    { "title": "<str>", "description": "<str>", "frequency": "high|medium|low", "affectedArea": "<str>" }
+  ],
+  "recommendations": [
+    { "title": "<str>", "description": "<str>", "priority": "critical|high|medium", "impact": "<str>" }
+  ],
+  "npsScore": <-100 to 100>,
+
+  "analyzedAt": "<ISO date string>"
+}
+```
+
+#### How JSON is handled server-side
+
+Even with “JSON-only” instructions, the backend defensively extracts and parses JSON:
+
+- It reads the agent output (`result.finalOutput`)
+- It searches for the first JSON object using this regex: `/{[\s\S]*}/`
+- It parses that matched substring with `JSON.parse(...)`
+- If no JSON match is found, it throws an error: **“Agent did not return valid JSON”**
+
+The endpoint returns HTTP 500 with `{ "error": "..." }` if parsing fails.
+
+---
+
 ### Frontend (Angular)
+
 - UI collects:
   - **Product name**
   - **Feedback entries** (entered as text; separator supports `---` or blank lines)
